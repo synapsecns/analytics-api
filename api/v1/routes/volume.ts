@@ -2,7 +2,7 @@ import express, {Request, Response} from "express";
 import {param, validationResult} from "express-validator";
 import {MongoConnection} from '../../db/MongoConnection'
 import {Document} from 'mongodb'
-import {getChains} from '../../utils/chainUtils'
+import {getChainIdNums, getChainNameFromId} from '../../utils/chainUtils'
 
 const router = express.Router();
 
@@ -17,26 +17,20 @@ router.get('/total/tx_count/:direction',
             return res.status(400).json({errors: errors.array()})
         }
 
-        let supportedChainIds = getChains()
+        let supportedChainIds = getChainIdNums()
         let direction = req.params.direction;
-
-        let chainIds: string[]
-        if (req.query.chainId && (<string>req.query.chainId in supportedChainIds)) {
-            chainIds = [<string>req.query.chainId]
-        } else {
-            chainIds = Object.keys(getChains());
-        }
 
         let resObj = {
             "data": {}
         }
 
         let collection = await MongoConnection.getBridgeTransactionsCollection()
-        for (const id of chainIds) {
-            let matchFilter = direction === 'in' ?
-                {'fromChainId': id, 'sentTime': {$exists: true}} :
-                {'toChainId': id, 'receivedTime': {$exists: true}}
-            let dateField = direction === 'in' ? '$sentTime' : '$receivedTime'
+        for (const chainId of supportedChainIds) {
+
+            let matchFilter = direction === 'out' ?
+                {'fromChainId': chainId, 'sentTime': {$exists: true}} :
+                {'toChainId': chainId, 'receivedTime': {$exists: true}}
+            let dateField = direction === 'out' ? '$sentTime' : '$receivedTime'
 
             let txnCountByDate: Document[] = await collection.aggregate([
                 {
@@ -72,12 +66,13 @@ router.get('/total/tx_count/:direction',
                 }
             ]).toArray()
 
-            console.log(txnCountByDate)
-
             // Maps date to count
+            let chainName = getChainNameFromId(chainId)
+            // @ts-ignore
+            resObj['data'][chainName] = {}
             for (let txn of txnCountByDate) {
                 // @ts-ignore
-                resObj.data[id][txn._id] = txn.count
+                resObj['data'][chainName][txn._id] = txn.count
             }
         }
 

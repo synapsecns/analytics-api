@@ -19,3 +19,17 @@ export function getChains() {
         "1666600000": "harmony"
     }
 }
+
+export function getChainIdNums() {
+    let res: number[] = []
+    for (let key of Object.keys(getChains())) {
+        res.push(parseInt(key))
+    }
+    return res
+}
+
+export function getChainNameFromId(chainId: number|string) {
+    let chainIdStr: string = chainId.toString()
+    // @ts-ignore
+    return getChains()[chainIdStr]
+}

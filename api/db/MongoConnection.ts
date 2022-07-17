@@ -5,7 +5,7 @@ export class MongoConnection {
 
     /** Instantiation/creation of mongodb client */
     static async createClient() {
-        let MONGO_URI = process.env.MONGO_URI || ""
+        let MONGO_URI = process.env.MONGO_URI!
         return MongoConnection._client = await MongoClient.connect(
             MONGO_URI,
             {maxPoolSize: 64}
