@@ -15,4 +15,8 @@ export class MongoConnection {
     static async getClientDb() {
         return MongoConnection._client.db()
     }
+
+    static async getBridgeTransactionsCollection() {
+        return (await this.getClientDb()).collection('bridgetransactions');
+    }
 }
