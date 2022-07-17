@@ -1,14 +1,20 @@
 import express, {Request, Response} from "express";
-import {param, validationResult} from "express-validator";
+import {param, validationResult, query} from "express-validator";
 import {MongoConnection} from '../../db/MongoConnection'
 import {Document} from 'mongodb'
-import {getChainIdNums, getChainNameFromId} from '../../utils/chainUtils'
+import {
+    getChainIdNumFromName,
+    getChainIdNums,
+    getChainNameFromId,
+    getChainNames
+} from '../../utils/chainUtils'
 
 const router = express.Router();
 
 router.get('/total/tx_count/:direction',
     [
         param('direction').isIn(["in", "out"]),
+        query('chain').optional().isIn(getChainNames())
     ],
     async (req: Request, res: Response) => {
 
@@ -17,15 +23,14 @@ router.get('/total/tx_count/:direction',
             return res.status(400).json({errors: errors.array()})
         }
 
-        let supportedChainIds = getChainIdNums()
-        let direction = req.params.direction;
+        // Determine direction and chainIds to find results for
+        let direction = req.params.direction
+        let chainIdsToFind: number[] = req.query.chain ?
+            [getChainIdNumFromName(req.query.chain)] : getChainIdNums()
 
-        let resObj = {
-            "data": {}
-        }
-
+        let resObj = {'data': {}}
         let collection = await MongoConnection.getBridgeTransactionsCollection()
-        for (const chainId of supportedChainIds) {
+        for (const chainId of chainIdsToFind) {
 
             let matchFilter = direction === 'out' ?
                 {'fromChainId': chainId, 'sentTime': {$exists: true}} :
@@ -37,10 +42,11 @@ router.get('/total/tx_count/:direction',
                     $match: matchFilter
                 },
                 {
+                    // Multiple epoch by 1000 as $toDate in mongo requires ms
                     $addFields: {
                         'date': {
                             $dateToString: {
-                                format: "%Y-%m-%d", date: {
+                                format: '%Y-%m-%d', date: {
                                     $toDate: {$multiply: [dateField, 1000]}
                                 }
                             }
@@ -49,19 +55,19 @@ router.get('/total/tx_count/:direction',
                 },
                 {
                     $group: {
-                        _id: "$date",
+                        _id: '$date',
                         count: {$sum: 1},
                     }
                 },
                 {
                     $project: {
                         _id: 1,
-                        count: {$toInt: "$count"},
+                        count: {$toInt: '$count'},
                     }
                 },
                 {
                     $sort: {
-                        _id: 1
+                        _id: -1
                     }
                 }
             ]).toArray()

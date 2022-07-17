@@ -28,8 +28,27 @@ export function getChainIdNums() {
     return res
 }
 
+export function getChainIdStr() {
+    return Object.keys(getChains())
+}
+
+export function getChainNames() {
+    return Object.values(getChains())
+}
+
 export function getChainNameFromId(chainId: number|string) {
     let chainIdStr: string = chainId.toString()
     // @ts-ignore
     return getChains()[chainIdStr]
+}
+
+export function getChainIdNumFromName(chainName: string | any) {
+    let chains = getChains()
+    for (let key of Object.keys(chains)) {
+        // @ts-ignore
+        if (chains[key] === chainName) {
+            return parseInt(key)
+        }
+    }
+    return 0
 }

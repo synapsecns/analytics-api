@@ -7,4 +7,5 @@ Derives analytics presented as REST API endpoints from data populated by [synaps
 * `cp .env.sample .env`
   * Ensure `MONGO_URI` and `REDIS_URI` is set, with mongo being the same instance as synapse-indexer 
 * `npm i`
-* `npm run dev`
+* `npm run dev` for development
+* `npm run build`, then `npm start` for production
