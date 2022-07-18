@@ -3,10 +3,11 @@ import 'dotenv/config'
 import express, { Express, Request, Response } from 'express';
 import bodyParser from "body-parser";
 
+import {MongoConnection} from "./db/MongoConnection";
+import {RedisConnection} from "./db/RedisConnection";
+
 // Import routes
-import {MongoConnection} from "./api/db/MongoConnection";
-import {RedisConnection} from "./api/db/RedisConnection";
-import volume from "./api/v1/routes/volume";
+import volume from "./routes/volume";
 
 async function setupDBs() {
     await MongoConnection.createClient()
@@ -25,7 +26,7 @@ setupDBs().then(_ => {
         res.json({"message":"synapse analytics api"});
     });
 
-    // Define routes
+    // Setup routes
     app.use('/api/v1/volume', volume);
 
     // Start server

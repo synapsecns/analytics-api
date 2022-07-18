@@ -2,7 +2,7 @@
   "name": "synapse-analytics-api",
   "version": "1.0.0",
   "description": "Analytics API for Synapse Protocol",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",

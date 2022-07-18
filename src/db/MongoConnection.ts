@@ -1,5 +1,4 @@
 import { MongoClient } from "mongodb"
-
 export class MongoConnection {
     static _client: MongoClient
 
