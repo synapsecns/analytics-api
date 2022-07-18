@@ -1,5 +1,5 @@
 export function getChains() {
-    return {
+    let chains: { [id: string]: string } = {
         "1": "ethereum",
         "10": "optimism",
         "25": "cronos",
@@ -17,7 +17,9 @@ export function getChains() {
         "121014925": "terra",
         "1313161554": "aurora",
         "1666600000": "harmony"
-    }
+    };
+
+    return chains
 }
 
 export function getChainIdNums() {
@@ -28,24 +30,18 @@ export function getChainIdNums() {
     return res
 }
 
-export function getChainIdStr() {
-    return Object.keys(getChains())
-}
-
 export function getChainNames() {
     return Object.values(getChains())
 }
 
-export function getChainNameFromId(chainId: number|string) {
+export function getChainNameFromId(chainId: number | string) {
     let chainIdStr: string = chainId.toString()
-    // @ts-ignore
     return getChains()[chainIdStr]
 }
 
 export function getChainIdNumFromName(chainName: string | any) {
     let chains = getChains()
     for (let key of Object.keys(chains)) {
-        // @ts-ignore
         if (chains[key] === chainName) {
             return parseInt(key)
         }

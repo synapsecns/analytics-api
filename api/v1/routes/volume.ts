@@ -28,10 +28,11 @@ router.get('/total/tx_count/:direction',
         let chainIdsToFind: number[] = req.query.chain ?
             [getChainIdNumFromName(req.query.chain)] : getChainIdNums()
 
-        let resObj = {'data': {}}
+        let resObj: {[data:string] : { [chain:string] : {[date:string] : number} }} = {'data': {}}
         let collection = await MongoConnection.getBridgeTransactionsCollection()
         for (const chainId of chainIdsToFind) {
 
+            // Determine fields to be used, depending on transaction direction
             let matchFilter = direction === 'out' ?
                 {'fromChainId': chainId, 'sentTime': {$exists: true}} :
                 {'toChainId': chainId, 'receivedTime': {$exists: true}}
@@ -72,12 +73,10 @@ router.get('/total/tx_count/:direction',
                 }
             ]).toArray()
 
-            // Maps date to count
+            // Build result for each chain
             let chainName = getChainNameFromId(chainId)
-            // @ts-ignore
             resObj['data'][chainName] = {}
             for (let txn of txnCountByDate) {
-                // @ts-ignore
                 resObj['data'][chainName][txn._id] = txn.count
             }
         }

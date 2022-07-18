@@ -22,12 +22,10 @@ export class RedisConnection {
      * @param expireIn
      * @return {Promise<String>}
      */
-    static async setForQuery(queryName: String, args: Object, mongoResults: Object, expireIn: Number) {
+    static async setForQuery(queryName: String, args: Object, mongoResults: Object, expireIn: number) {
         let argsHash = hash(args)
         let key: string = `${queryName}_${argsHash}`
         let jsonRes: string = JSON.stringify(mongoResults)
-
-        // @ts-ignore
         await RedisConnection._client.set(key, jsonRes, 'EX', expireIn)
     }
 
