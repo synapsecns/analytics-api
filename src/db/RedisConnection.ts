@@ -6,7 +6,7 @@ export class RedisConnection {
 
     /** Instantiation/creation of redis client */
     static async createClient() {
-        let REDIS_URI = process.env.REDIS_URI || ""
+        let REDIS_URI = process.env.REDIS_URI!
         return RedisConnection._client = new Redis(REDIS_URI)
     }
     /** get the underlying redis client db */
@@ -22,12 +22,10 @@ export class RedisConnection {
      * @param expireIn
      * @return {Promise<String>}
      */
-    static async setForQuery(queryName: String, args: Object, mongoResults: Object, expireIn: Number) {
+    static async setForQuery(queryName: String, args: Object, mongoResults: Object, expireIn: number) {
         let argsHash = hash(args)
         let key: string = `${queryName}_${argsHash}`
         let jsonRes: string = JSON.stringify(mongoResults)
-
-        // @ts-ignore
         await RedisConnection._client.set(key, jsonRes, 'EX', expireIn)
     }
 
