@@ -6,6 +6,16 @@ Derives analytics presented as REST API endpoints from data populated by [synaps
 
 * `cp .env.sample .env`
   * Ensure `MONGO_URI` and `REDIS_URI` is set, with mongo being the same instance as synapse-indexer 
+  * Local instances can be setup using docker as 
+    * `docker run -d -p 27017:27017 mongo`
+    * `docker run -d -p 6379:6379 redis`
 * `npm i`
-* `npm run dev` for development
-* `npm run build`, then `npm start` for production
+* Run in dev
+  * `npm run dev`
+* Run in prod
+  * `npm run build`
+  * `npm start`
+* Tests
+  * `cp .env.sample .env.test`
+  * `echo $'\nTEST=true' >> .env.test`
+  * `npm test`

@@ -15,7 +15,15 @@ export class MongoConnection {
         return MongoConnection._client.db()
     }
 
+    static async closeClient() {
+        await MongoConnection._client.close()
+    }
+
     static async getBridgeTransactionsCollection() {
-        return (await this.getClientDb()).collection('bridgetransactions');
+        let bridgeTransactionCollection = 'bridgetransactions'
+        if (process.env.TEST) {
+            bridgeTransactionCollection = 'testbridgetransactions'
+        }
+        return (await this.getClientDb()).collection(bridgeTransactionCollection);
     }
 }

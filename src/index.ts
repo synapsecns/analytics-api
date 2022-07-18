@@ -9,29 +9,33 @@ import {RedisConnection} from "./db/RedisConnection";
 // Import routes
 import volume from "./routes/volume";
 
-async function setupDBs() {
+export const dbConnect = async() => {
     await MongoConnection.createClient()
     await RedisConnection.createClient()
 }
 
-setupDBs().then(_ => {
-
-    // Setup API
-    const app: Express = express();
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: true }));
+export const createServer = async (port: number = 4001) => {
+    // Setup Express API
+    const app: Express = express()
+    app.use(bodyParser.json())
+    app.use(bodyParser.urlencoded({ extended: true }))
     app.set('json spaces', 4)
 
     app.get('/', (req: Request, res: Response) => {
-        res.json({"message":"synapse analytics api"});
+        res.json({"message":"synapse analytics api"})
     });
 
     // Setup routes
-    app.use('/api/v1/volume', volume);
+    app.use('/api/v1/analytics/volume', volume)
 
     // Start server
-    const port = process.env.PORT || 4001;
-    app.listen(port, () => {
-        console.log(`Server is running at http://localhost:${port}`);
-    });
-})
+    const server = await app.listen(port)
+    console.log(`Server is running at http://localhost:${port}`)
+
+    return server
+}
+
+// Start server if not triggered by tests
+if (!process.env.TEST) {
+    dbConnect().then(_ => createServer())
+}
