@@ -8,7 +8,6 @@ on:
 
 jobs:
   test:
-
     runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
@@ -45,5 +44,11 @@ jobs:
           cp .env.sample .env.test
           echo $'\nTEST=true' >> .env.test
 
-      - name: run tests
-        run: npm test
+      - name: run tests w coverage
+        run: npm run test:coverage
+
+      - name: Upload test coverage
+        run: |
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov
