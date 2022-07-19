@@ -1,6 +1,8 @@
 # synapse-analytics-api
 
-Derives analytics presented as REST API endpoints from data populated by [synapse-indexer](https://github.com/synapsecns/synapse-indexer) 
+[![codecov](https://codecov.io/gh/synapsecns/synapse-analytics-api/branch/master/graph/badge.svg?token=IGPQKWB9ON)](https://codecov.io/gh/synapsecns/synapse-analytics-api)
+
+Synapse Analytics REST API computed from data populated by [synapse-indexer](https://github.com/synapsecns/synapse-indexer) 
 
 ### Local Setup
 
@@ -18,4 +20,4 @@ Derives analytics presented as REST API endpoints from data populated by [synaps
 * Tests
   * `cp .env.sample .env.test`
   * `echo $'\nTEST=true' >> .env.test`
-  * `npm test`
+  * `npm test` or `npm run test:coverage`
