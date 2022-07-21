@@ -1,5 +1,4 @@
 import Redis from "ioredis";
-import hash from "object-hash"
 
 export class RedisConnection {
     static _client: Redis
@@ -12,32 +11,5 @@ export class RedisConnection {
     /** get the underlying redis client db */
     static async getClient() {
         return RedisConnection._client
-    }
-
-    /**
-     * Cache mongo results for given graphql query with `queryName` and `args` in redis
-     * @param queryName
-     * @param args
-     * @param mongoResults
-     * @param expireIn
-     * @return {Promise<String>}
-     */
-    static async setForQuery(queryName: String, args: Object, mongoResults: Object, expireIn: number) {
-        let argsHash = hash(args)
-        let key: string = `${queryName}_${argsHash}`
-        let jsonRes: string = JSON.stringify(mongoResults)
-        await RedisConnection._client.set(key, jsonRes, 'EX', expireIn)
-    }
-
-    /**
-     * Get mongo results for given graphql query with `queryName` and `args` in redis
-     * @param queryName
-     * @param args
-     * @return {Promise<String>}
-     */
-    static async getForQuery(queryName: String, args: Object){
-        let argsHash = hash(args)
-        let key = `${queryName}_${argsHash}`
-        return RedisConnection._client.get(key)
     }
 }
