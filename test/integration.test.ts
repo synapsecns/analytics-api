@@ -47,12 +47,22 @@ describe('integration tests', () => {
         console.log('Server closed')
     })
 
-    it('should return total transaction count for chains', async () => {
+    it('should return transaction count for chains', async () => {
         const response = await request(url).get('/api/v1/analytics/volume/total/tx_count/in')
-        let responseBody = response.body
-        expect(responseBody.data).to.be.an('object').that.is.not.empty
-        expect(responseBody.data.ethereum).to.be.an('object').that.is.not.empty
-        expect(Object.keys(responseBody.data.ethereum)).to.include.members(['2022-03-24'])
-        expect(responseBody.data.ethereum['2022-03-24']).to.be.a('number')
+        expect(response.body.data).to.be.an('object').that.is.not.empty
+        expect(response.body.data).to.include.keys(['totals', 'ethereum', 'bsc'])
+        expect(response.body.data.ethereum).to.be.an('object').that.is.not.empty
+        expect(response.body.data.ethereum).to.include.keys(['2022-03-24', 'total'])
+        expect(response.body.data.ethereum['2022-03-24']).to.be.a('number')
     }).timeout(5000)
+
+    it('should return transaction volume for chains', async () => {
+        const response = await request(url).get('/api/v1/analytics/volume/total/in')
+        expect(response.body.data).to.be.an('object').that.is.not.empty
+        expect(response.body.data).to.include.keys(['2022-03-24', 'totals'])
+        expect(response.body.data['2022-03-24']).to.be.an('object').that.is.not.empty
+        expect(response.body.data['2022-03-24']).to.include.keys(['ethereum', 'total'])
+        expect(response.body.data['2022-03-24'].ethereum).to.be.a('number')
+    }).timeout(5000)
+
 })
