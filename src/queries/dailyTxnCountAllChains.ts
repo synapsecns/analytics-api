@@ -30,6 +30,11 @@ export async function getDailyTxnCountAllChains(direction: string) {
                 _id: 1,
                 total: 1,
             }
+        },
+        {
+            $sort: {
+                _id: -1
+            }
         }
     ]).toArray()
 }
