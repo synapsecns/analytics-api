@@ -1,4 +1,4 @@
-import {RedisConnection} from "./RedisConnection.js"
+import {RedisConnection} from "./RedisConnection"
 
 export declare interface QueryArgs  {
     [params: string] : any
@@ -17,7 +17,7 @@ export declare interface QueryArgs  {
  * @param args
  * @param queryCallback
  * @param expireInSeconds Number of seconds to cache
- * @return {Promise<Object[]>}
+ * @return {Promise<Object[]>} RedisConnection
  */
 export async function queryAndCache(queryName: String, args: QueryArgs, queryCallback: any, expireInSeconds=300) {
     let res
