@@ -1,4 +1,4 @@
-name: run tests
+name: pipeline
 
 on:
   pull_request:
