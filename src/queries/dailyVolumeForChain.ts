@@ -1,6 +1,10 @@
 import {MongoConnection} from '../db/MongoConnection'
+import {QueryArgs} from '../db/queryAndCache'
 
-export async function getDailyChainVolume(chainId: number, direction: string) {
+export async function getDailyChainVolume(args: QueryArgs) {
+    const chainId: number = args.chainId
+    const direction: string = args.direction
+
     let collection = await MongoConnection.getBridgeTransactionsCollection()
 
     // Determine fields to be used, depending on transaction direction

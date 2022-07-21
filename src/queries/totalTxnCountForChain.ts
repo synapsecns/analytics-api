@@ -1,6 +1,10 @@
 import {MongoConnection} from '../db/MongoConnection'
+import {QueryArgs} from '../db/queryAndCache'
 
-export async function getTotalChainTxnCount(chainId: number, direction: string) {
+export async function getTotalChainTxnCount(args: QueryArgs) {
+    let chainId: number = args.chainId
+    let direction: string = args.direction
+
     let collection = await MongoConnection.getBridgeTransactionsCollection()
 
     let matchFilter = direction === 'out' ? {'fromChainId': chainId} : {'toChainId': chainId}

@@ -6,6 +6,7 @@ import {getDailyChainVolume} from '../queries/dailyVolumeForChain'
 import {getTotalChainVolume} from '../queries/totalVolumeForChain'
 import {getDailyTxnCountAllChains} from "../queries/dailyTxnCountAllChains"
 import {getDailyVolumeAllChains} from "../queries/dailyVolumeAllChains"
+import {queryAndCache} from '../db/queryAndCache'
 
 import {
     getChainIdNumFromName,
@@ -48,7 +49,11 @@ volumeRoutes.get('/total/tx_count/:direction',
             let chainName = getChainNameFromId(chainId)
 
             // get daily txn count for chain
-            let chainTxnCountRes = await getDailyChainTxnCount(chainId, direction)
+            let chainTxnCountRes = await queryAndCache(
+                'getDailyChainTxnCount',
+                {chainId, direction},
+                getDailyChainTxnCount
+            )
             resData.data[chainName] = {}
             for (let dailyTxnCount of chainTxnCountRes) {
                 let date = dailyTxnCount._id
@@ -57,7 +62,12 @@ volumeRoutes.get('/total/tx_count/:direction',
             }
 
             // get total txn count for chain
-            let totalChainTxnCount = await getTotalChainTxnCount(chainId, direction)
+            let totalChainTxnCount = await queryAndCache(
+                'getTotalChainTxnCount',
+                {chainId, direction},
+                getTotalChainTxnCount
+            )
+
             if (totalChainTxnCount.length > 0 && totalChainTxnCount[0].total) {
                 resData.data[chainName]['total'] = totalChainTxnCount[0].total
             }
@@ -65,7 +75,12 @@ volumeRoutes.get('/total/tx_count/:direction',
         }
 
         // get daily totals across all chains
-        let dailyCounts = await getDailyTxnCountAllChains(direction)
+        let dailyCounts = await queryAndCache(
+            'getDailyTxnCountAllChains',
+            {direction},
+            getDailyTxnCountAllChains
+        )
+
         resData.data['totals'] = {}
         for (const dCount of dailyCounts) {
             let date = dCount._id
@@ -104,7 +119,12 @@ volumeRoutes.get('/total/:direction',
 
         for (const chainId of getChainIdNums()) {
             let chainName = getChainNameFromId(chainId)
-            let chainVolume = await getDailyChainVolume(chainId, direction)
+
+            let chainVolume = await queryAndCache(
+                'getDailyChainVolume',
+                {chainId, direction},
+                getDailyChainVolume
+            )
 
             // Append daily volume for chain
             for (let dateVolume of chainVolume) {
@@ -115,14 +135,24 @@ volumeRoutes.get('/total/:direction',
             }
 
             // Append total volume
-            let totalTxnVolumeRes = await getTotalChainVolume(chainId, direction)
+            let totalTxnVolumeRes = await queryAndCache(
+                'getTotalChainVolume',
+                {chainId, direction},
+                getTotalChainVolume
+            )
+
             if (totalTxnVolumeRes.length > 0 && totalTxnVolumeRes[0].total) {
                 resData.data.totals[chainName] = totalTxnVolumeRes[0].total
             }
         }
 
         // Get daily total volume across all chains
-        let dailyVolumes = await getDailyVolumeAllChains(direction)
+        let dailyVolumes = await queryAndCache(
+            'getDailyVolumeAllChains',
+            {direction},
+            getDailyVolumeAllChains
+        )
+
         for (const dVolume of dailyVolumes) {
             let date = dVolume._id
             if (date === null) continue

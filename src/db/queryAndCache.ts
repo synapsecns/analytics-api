@@ -1,7 +1,7 @@
 import {RedisConnection} from "./RedisConnection.js"
 
-declare interface QueryArgs  {
-    bypassCache?: boolean
+export declare interface QueryArgs  {
+    [params: string] : any
 }
 
 /**
@@ -19,7 +19,7 @@ declare interface QueryArgs  {
  * @param expireInSeconds Number of seconds to cache
  * @return {Promise<Object[]>}
  */
-export async function queryAndCache(queryName: String, args: QueryArgs, queryCallback: any, expireInSeconds=30) {
+export async function queryAndCache(queryName: String, args: QueryArgs, queryCallback: any, expireInSeconds=300) {
     let res
     let cachedRes = await RedisConnection.getForQuery(
         queryName,
