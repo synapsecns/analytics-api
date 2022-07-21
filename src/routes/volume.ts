@@ -6,6 +6,7 @@ import {getDailyChainVolume} from '../queries/dailyVolumeForChain'
 import {getTotalChainVolume} from '../queries/totalVolumeForChain'
 import {getDailyTxnCountAllChains} from "../queries/dailyTxnCountAllChains"
 import {getDailyVolumeAllChains} from "../queries/dailyVolumeAllChains"
+import {RequestCache} from '../db/RequestCache'
 
 import {
     getChainIdNumFromName,
@@ -22,6 +23,12 @@ volumeRoutes.get('/total/tx_count/:direction',
         query('chain').optional().isIn(getChainNames())
     ],
     async (req: Request, res: Response) => {
+
+        let cachedResponse = await RequestCache.getResponse(req)
+        if (cachedResponse) {
+            let parsedResponse = JSON.parse(cachedResponse)
+            return res.json(parsedResponse)
+        }
 
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -73,8 +80,9 @@ volumeRoutes.get('/total/tx_count/:direction',
             resData.data['totals'][date] = dCount.total
         }
 
-        return res.json(resData)
+        await RequestCache.setResponse(req, resData)
 
+        return res.json(resData)
     });
 
 volumeRoutes.get('/total/:direction',
@@ -82,6 +90,12 @@ volumeRoutes.get('/total/:direction',
         param('direction').isIn(["in", "out"]),
     ],
     async (req: Request, res: Response) => {
+
+        let cachedResponse = await RequestCache.getResponse(req)
+        if (cachedResponse) {
+            let parsedResponse = JSON.parse(cachedResponse)
+            return res.json(parsedResponse)
+        }
 
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -129,6 +143,8 @@ volumeRoutes.get('/total/:direction',
             resData.data[date] = !(date in resData.data) ? {} : resData.data[date]
             resData.data[date]['total'] = dVolume.total
         }
+
+        await RequestCache.setResponse(req, resData)
 
         return res.json(resData)
     });
