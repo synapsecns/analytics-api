@@ -65,4 +65,12 @@ describe('integration tests', () => {
         expect(response.body.data['2022-03-24'].ethereum).to.be.a('number')
     }).timeout(5000)
 
+    it('should return dates with new users', async () => {
+        const response = await request(url).get('/api/v1/analytics/volume/new_users')
+        expect(response.body.data).to.be.an('object').that.is.not.empty
+        expect(response.body.data).to.include.keys(['2022-03-24', '2022-03-31'])
+        expect(response.body.data['2022-03-24']).to.be.a('number')
+        expect(response.body.data['2022-03-24']).to.equal(14)
+    }).timeout(5000)
+
 })

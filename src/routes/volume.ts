@@ -14,6 +14,7 @@ import {
     getChainNameFromId,
     getChainNames
 } from '../utils/chainUtils'
+import {getDailyUniqueUsers} from '../queries/dailyUniqueUsers'
 
 const volumeRoutes = express.Router();
 
@@ -148,5 +149,49 @@ volumeRoutes.get('/total/:direction',
 
         return res.json(resData)
     });
+
+volumeRoutes.get('/new_users',
+    [
+        param('fromDate').optional().isDate(),
+        param('toDate').optional().isDate(),
+    ],
+    async (req: Request, res: Response) => {
+
+        let cachedResponse = await RequestCache.getResponse(req)
+        if (cachedResponse) {
+            let parsedResponse = JSON.parse(cachedResponse)
+            return res.json(parsedResponse)
+        }
+
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).json({errors: errors.array()})
+        }
+
+        // Get dates to find result until
+        let fromDate = req.params.fromDate
+        let toDate = req.params.toDate
+
+        let resData: {
+            data: {
+                [date: string]: {
+                    newUsers: number
+                }
+            }
+        } = {data: {}}
+
+        // Compute and aggregate result
+        let dailyUsersRes = await getDailyUniqueUsers(fromDate, toDate)
+        for (const dUsers of dailyUsersRes) {
+            let date = dUsers._id
+            if (date === null) continue
+            resData.data[date] = dUsers.newUserCnt
+        }
+
+        await RequestCache.setResponse(req, resData)
+
+        return res.json(resData)
+    });
+
 
 export default volumeRoutes
