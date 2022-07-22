@@ -1,16 +1,19 @@
 import {MongoConnection} from '../db/MongoConnection'
+import {dateToUnixTimestamp} from "../utils/timeUtils"
 
 export async function getDailyUniqueUsers(fromDate?: string, toDate?: string) {
     let collection = await MongoConnection.getBridgeTransactionsCollection()
+
+    // TODO: Fix matchfilter
     let matchFilter: {'$sentTime'?: any, '$receivedTime'?: any} = {}
-    if (fromDate) {
-        let fromTimestamp = dateToUnixTimestamp(fromDate);
-        matchFilter['$sentTime'] = {"$gt": fromTimestamp}
-    }
-    if (toDate) {
-        let toTimestamp = dateToUnixTimestamp(toDate);
-        matchFilter['$receivedTime'] = {"$lt": toTimestamp}
-    }
+    // if (fromDate) {
+    //     let fromTimestamp = dateToUnixTimestamp(fromDate);
+    //     matchFilter['$sentTime'] = {"$gt": fromTimestamp}
+    // }
+    // if (toDate) {
+    //     let toTimestamp = dateToUnixTimestamp(toDate);
+    //     matchFilter['$receivedTime'] = {"$lt": toTimestamp}
+    // }
 
     return await collection.aggregate([
         {
@@ -31,6 +34,9 @@ export async function getDailyUniqueUsers(fromDate?: string, toDate?: string) {
                     }
                 }
             }
+        },
+        {
+            $match: matchFilter
         },
         // Group addresses with their first txn date
         {

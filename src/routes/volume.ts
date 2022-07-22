@@ -169,8 +169,8 @@ volumeRoutes.get('/new_users',
         }
 
         // Get dates to find result until
-        let fromDate = req.params.fromDate
-        let toDate = req.params.toDate
+        let fromDate = req.query.fromDate ? req.query.fromDate.toString() : undefined
+        let toDate = req.query.toDate ? req.query.toDate.toString() : undefined
 
         let resData: {
             data: {
