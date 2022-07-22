@@ -23,7 +23,7 @@ export class RequestCache {
      * @param jsonRes
      * @param expireIn
      */
-    static async setResponse(req: Request, jsonRes: object, expireIn: number = 30) {
+    static async setResponse(req: Request, jsonRes: object, expireIn: number = 300) {
         let key: string = getRouteCacheKey(req)
         let value: string = JSON.stringify(jsonRes)
         await RedisConnection._client.set(key, value, 'EX', expireIn)
