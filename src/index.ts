@@ -6,8 +6,7 @@ import bodyParser from "body-parser";
 import {MongoConnection} from "./db/MongoConnection";
 import {RedisConnection} from "./db/RedisConnection";
 
-// Import routes
-import volume from "./routes/volume";
+import routes from "./routes"
 
 export const dbConnect = async() => {
     await MongoConnection.createClient()
@@ -15,6 +14,7 @@ export const dbConnect = async() => {
 }
 
 export const createServer = async (port: number = 4001) => {
+
     // Setup Express API
     const app: Express = express()
     app.use(bodyParser.json())
@@ -26,7 +26,7 @@ export const createServer = async (port: number = 4001) => {
     });
 
     // Setup routes
-    app.use('/api/v1/analytics/volume', volume)
+    app.use('/api/v1/analytics', routes)
 
     // Start server
     const server = await app.listen(port)

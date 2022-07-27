@@ -66,7 +66,7 @@ describe('integration tests', () => {
     }).timeout(5000)
 
     it('should return dates with new users', async () => {
-        const response = await request(url).get('/api/v1/analytics/volume/new_users')
+        const response = await request(url).get('/api/v1/analytics/new_users')
         expect(response.body.data).to.be.an('object').that.is.not.empty
         expect(response.body.data).to.include.keys(['2022-03-24', '2022-03-31'])
         expect(response.body.data['2022-03-24']).to.be.a('number')
