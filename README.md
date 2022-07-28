@@ -4,6 +4,11 @@
 
 Synapse Analytics REST API computed from data populated by [synapse-indexer](https://github.com/synapsecns/synapse-indexer) 
 
+### Endpoints
+* `/api/v1/analytics/volume/total/tx_count/in`
+* `/api/v1/analytics/volume/total/in`
+* `/api/v1/analytics/new_users`
+
 ### Local Setup
 
 * `cp .env.sample .env`

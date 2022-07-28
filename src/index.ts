@@ -1,13 +1,14 @@
 import 'dotenv/config'
 
-import express, { Express, Request, Response } from 'express';
-import bodyParser from "body-parser";
+import express, { Express, Request, Response } from 'express'
+import bodyParser from "body-parser"
+import ejs from 'ejs'
+import cors from 'cors';
 
-import {MongoConnection} from "./db/MongoConnection";
-import {RedisConnection} from "./db/RedisConnection";
+import {MongoConnection} from "./db/MongoConnection"
+import {RedisConnection} from "./db/RedisConnection"
 
-// Import routes
-import volume from "./routes/volume";
+import routes from "./routes"
 
 export const dbConnect = async() => {
     await MongoConnection.createClient()
@@ -15,18 +16,25 @@ export const dbConnect = async() => {
 }
 
 export const createServer = async (port: number = 4001) => {
+
     // Setup Express API
     const app: Express = express()
     app.use(bodyParser.json())
     app.use(bodyParser.urlencoded({ extended: true }))
+    app.use(cors())
+
+    // Configure OpenAPI view
     app.set('json spaces', 4)
+    app.set('view engine', 'html');
+    app.engine('html', ejs.renderFile);
+    app.use(express.static('views'))
 
     app.get('/', (req: Request, res: Response) => {
-        res.json({"message":"synapse analytics api"})
+        res.render('index.html');
     });
 
     // Setup routes
-    app.use('/api/v1/analytics/volume', volume)
+    app.use('/api/v1/analytics', routes)
 
     // Start server
     const server = await app.listen(port)
