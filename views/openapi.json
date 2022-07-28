@@ -1,0 +1,314 @@
+{
+  "components": {
+    "schemas": {
+      "InvalidError": {
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "valids": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "type": "object"
+      },
+      "date": {
+        "type": "string",
+        "format": "date",
+        "example": "2021-11-29"
+      },
+      "Chains": {
+        "type": "string",
+        "enum": [
+          "ethereum",
+          "avalanche",
+          "bsc",
+          "polygon",
+          "arbitrum",
+          "fantom",
+          "harmony",
+          "boba",
+          "optimism",
+          "moonriver",
+          "aurora",
+          "moonbeam",
+          "cronos",
+          "metis",
+          "dfk",
+          "klaytn"
+        ]
+      },
+      "VolumeResponseIN": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "price_usd": {
+              "type": "number",
+              "format": "float"
+            },
+            "volume": {
+              "type": "number",
+              "format": "float"
+            },
+            "tx_count": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "VolumeResponseOUT": {
+        "type": "object",
+        "properties": {
+          "price_usd": {
+            "type": "number",
+            "format": "float"
+          },
+          "volume": {
+            "type": "number",
+            "format": "float"
+          },
+          "tx_count": {
+            "type": "number"
+          }
+        }
+      },
+      "VolumeResponseStats": {
+        "type": "object",
+        "properties": {
+          "usd": {
+            "type": "object",
+            "properties": {
+              "adjusted": {
+                "type": "number",
+                "format": "float"
+              },
+              "current": {
+                "type": "number",
+                "format": "float"
+              }
+            }
+          },
+          "volume": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "float"
+            }
+          }
+        }
+      },
+      "VolumeResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VolumeResponseIN"
+              },
+              {
+                "$ref": "#/components/schemas/VolumeResponseOUT"
+              }
+            ]
+          },
+          "stats": {
+            "$ref": "#/components/schemas/VolumeResponseStats"
+          }
+        },
+        "example": {
+          "data": {
+            "2021-10-25": {
+              "0xaa88c603d142c371ea0eac8756123c5805edee03": {
+                "usd": 1355.478528122246,
+                "volume": 123446.9082698944
+              },
+              "total": {
+                "usd": 1355.478528122246
+              }
+            },
+            "2021-10-26": {
+              "0xaa88c603d142c371ea0eac8756123c5805edee03": {
+                "usd": 1055.4443547315896,
+                "volume": 100420
+              },
+              "total": {
+                "usd": 1055.4443547315896
+              }
+            },
+            "2021-10-27": {
+              "0xaa88c603d142c371ea0eac8756123c5805edee03": {
+                "usd": 757281.1329737306,
+                "volume": 75000000
+              },
+              "total": {
+                "usd": 757281.1329737306
+              }
+            },
+            "2021-10-28": {
+              "0xaa88c603d142c371ea0eac8756123c5805edee03": {
+                "usd": 265722.62781034486,
+                "volume": 15805181.048415447
+              },
+              "total": {
+                "usd": 265722.62781034486
+              }
+            },
+            "2021-10-29": {
+              "0xaa88c603d142c371ea0eac8756123c5805edee03": {
+                "usd": 626228.3000757314,
+                "volume": 19759417.301290344
+              },
+              "total": {
+                "usd": 626228.3000757314
+              }
+            },
+            "2021-10-30": {
+              "0xaa88c603d142c371ea0eac8756123c5805edee03": {
+                "usd": 368915.2027302926,
+                "volume": 12501172.662217114
+              },
+              "total": {
+                "usd": 368915.2027302926
+              }
+            }
+          },
+          "stats": {
+            "usd": {
+              "adjusted": 2020558.186472953,
+              "current": 3624643.8468636745
+            },
+            "volume": {
+              "0xaa88c603d142c371ea0eac8756123c5805edee03": 123289637.9201928
+            }
+          }
+        }
+      }
+    }
+  },
+  "info": {
+    "title": "Synapse Analytics API",
+    "version": "1.0.0",
+    "description": "Synapse Protocol transaction analytics"
+  },
+  "openapi": "3.0.3",
+  "servers": [
+    { "url": "https://syn-analytics-api.metagabbar.xyz", "description": "production" },
+    { "url": "http://localhost:4001", "description": "development" }
+  ],
+  "paths": {
+    "/api/v1/analytics/volume/total/{direction}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "direction",
+            "required": true,
+            "description": "count the asset going IN or OUT of the chain",
+            "schema": {
+              "type": "string",
+              "enum": ["in", "out"]
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "description": "fetch data from date",
+            "schema": {
+              "$ref": "#/components/schemas/date"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "description": "fetch data till date",
+            "schema": {
+              "$ref": "#/components/schemas/date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "number",
+                          "format": "float"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "number",
+                        "format": "float"
+                      }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "number",
+                        "format": "float"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        },
+        "summary": "total volume of every chain in USD",
+        "tags": ["Bridge Volume"]
+      }
+    },
+    "/api/v1/analytics/volume/total/tx_count/{direction}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "direction",
+            "required": true,
+            "description": "count the asset going IN or OUT of the chain",
+            "schema": {
+              "type": "string",
+              "enum": ["in", "out"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "number"
+                      }
+                    },
+                    "totals": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        },
+        "summary": "total tx count of every chain",
+        "tags": ["Bridge Volume"]
+      }
+    }
+  }
+}
