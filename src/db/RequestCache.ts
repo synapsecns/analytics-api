@@ -14,7 +14,7 @@ function getRouteCacheKey(req: Request) {
     return key
 }
 
-const REDIS_EXPIRE_TTL_DEFAULT = 60
+const REDIS_EXPIRE_TTL_DEFAULT = 90
 
 export class RequestCache {
 
