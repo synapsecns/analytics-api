@@ -1,4 +1,10 @@
 import {MongoConnection} from '../db/MongoConnection'
+import {Document} from 'mongodb'
+
+export interface TotalVolumeForChainQueryResult {
+    chainId: number
+    totalVolume: Document[]
+}
 
 export async function getTotalChainVolume(chainId: number, direction: string) {
     let collection = await MongoConnection.getBridgeTransactionsCollection()
@@ -7,7 +13,7 @@ export async function getTotalChainVolume(chainId: number, direction: string) {
     let matchFilter = direction === 'out' ? {'fromChainId': chainId} : {'toChainId': chainId}
     let valueField = direction === 'out' ? '$sentValueUSD' : '$receivedValueUSD'
 
-    return await collection.aggregate([
+    let queryResult = await collection.aggregate([
         {
             $match: matchFilter
         },
@@ -24,4 +30,7 @@ export async function getTotalChainVolume(chainId: number, direction: string) {
             }
         }
     ]).toArray()
+
+    let response:TotalVolumeForChainQueryResult = {chainId, totalVolume: queryResult}
+    return response
 }

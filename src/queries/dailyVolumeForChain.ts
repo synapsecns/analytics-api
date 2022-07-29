@@ -1,4 +1,10 @@
 import {MongoConnection} from '../db/MongoConnection'
+import {Document} from 'mongodb'
+
+export interface DailyVolumeForChainQueryResult {
+    chainId: number
+    dailyVolume: Document[]
+}
 
 export async function getDailyChainVolume(chainId: number, direction: string) {
     let collection = await MongoConnection.getBridgeTransactionsCollection()
@@ -8,7 +14,7 @@ export async function getDailyChainVolume(chainId: number, direction: string) {
     let dateField = direction === 'out' ? '$sentTime' : '$receivedTime'
     let valueField = direction === 'out' ? '$sentValueUSD' : '$receivedValueUSD'
 
-    return await collection.aggregate([
+    let queryResult =  await collection.aggregate([
         {
             $match: matchFilter
         },
@@ -42,4 +48,7 @@ export async function getDailyChainVolume(chainId: number, direction: string) {
             }
         }
     ]).toArray()
+
+    let response: DailyVolumeForChainQueryResult = {chainId, dailyVolume: queryResult}
+    return response
 }
