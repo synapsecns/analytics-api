@@ -1,4 +1,9 @@
 import {MongoConnection} from '../db/MongoConnection'
+import {Document} from 'mongodb'
+
+export interface DailyVolumeAllChainsQueryResult {
+    dailyVolumes: Document[]
+}
 
 export async function getDailyVolumeAllChains(direction: string) {
     let collection = await MongoConnection.getBridgeTransactionsCollection()
@@ -7,7 +12,7 @@ export async function getDailyVolumeAllChains(direction: string) {
     let dateField = direction === 'out' ? '$sentTime' : '$receivedTime'
     let valueField = direction === 'out' ? '$sentValueUSD' : '$receivedValueUSD'
 
-    return await collection.aggregate([
+    let queryResponse = await collection.aggregate([
         {
             // Multiple epoch by 1000 as $toDate in mongo requires ms
             $addFields: {
@@ -29,8 +34,11 @@ export async function getDailyVolumeAllChains(direction: string) {
         {
             $project: {
                 _id: 1,
-                total: 1,
+                total: { $toDouble: "$total" },
             }
         }
     ]).toArray()
+
+    let response: DailyVolumeAllChainsQueryResult = {dailyVolumes: queryResponse}
+    return response
 }

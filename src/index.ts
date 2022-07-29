@@ -7,6 +7,7 @@ import cors from 'cors';
 
 import {MongoConnection} from "./db/MongoConnection"
 import {RedisConnection} from "./db/RedisConnection"
+import startCacheWorker from "./workers/cacheWorker"
 
 import routes from "./routes"
 
@@ -45,5 +46,5 @@ export const createServer = async (port: number = 4001) => {
 
 // Start server if not triggered by tests
 if (!process.env.TEST) {
-    dbConnect().then(_ => createServer())
+    dbConnect().then(_ => createServer().then(() => startCacheWorker()))
 }
