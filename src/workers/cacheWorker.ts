@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-let indexingInterval = 240 * 1000
+let indexingInterval = 50 * 1000
 let prefixUrl = 'http://localhost:4001/api/v1/analytics'
 
 let urls: Array<string> = [
