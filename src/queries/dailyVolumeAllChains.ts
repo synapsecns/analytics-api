@@ -34,7 +34,7 @@ export async function getDailyVolumeAllChains(direction: string) {
         {
             $project: {
                 _id: 1,
-                total: 1,
+                total: { $toDouble: "$total" },
             }
         }
     ]).toArray()
