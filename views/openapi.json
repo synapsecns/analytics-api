@@ -189,8 +189,11 @@
   },
   "info": {
     "title": "Synapse Analytics API",
-    "version": "1.0.0",
-    "description": "Synapse Protocol transaction analytics"
+    "version": "1.0.0-alpha",
+    "contact": {
+      "email": "metagabbar@gmail.com"
+    },
+    "description": "An API to track useful statistics for Synapse Protocol. Still a WIP. View the repo [here](https://github.com/synapsecns/synapse-analytics-api)"
   },
   "openapi": "3.0.3",
   "servers": [
@@ -263,7 +266,7 @@
           }
         },
         "summary": "total volume of every chain in USD",
-        "tags": ["Bridge Volume"]
+        "tags": ["Volume"]
       }
     },
     "/api/v1/analytics/volume/total/tx_count/{direction}": {
@@ -307,8 +310,35 @@
           }
         },
         "summary": "total tx count of every chain",
-        "tags": ["Bridge Volume"]
+        "tags": ["Transactions"]
+      }
+    },
+    "/api/v1/analytics/new_users": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Successful response"
+          }
+        },
+        "summary": "new users acquired daily",
+        "tags": ["Users"]
       }
     }
+
   }
 }
