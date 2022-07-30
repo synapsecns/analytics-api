@@ -15,7 +15,11 @@ async function cacheEndpoints() {
     // Aggregate queries
     let queries = []
     for (let url of urls) {
-        queries.push(fetch(`${prefixUrl}${url}`))
+        let headers: { [key: string] : string} = {}
+        if (process.env.CACHE_BYPASS_KEY) {
+            headers['CACHE_BYPASS_KEY'] = process.env.CACHE_BYPASS_KEY
+        }
+        queries.push(fetch(`${prefixUrl}${url}`, {headers}))
     }
 
     // Start timer
