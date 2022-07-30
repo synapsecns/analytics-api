@@ -5,9 +5,8 @@
 Synapse Analytics REST API computed from data populated by [synapse-indexer](https://github.com/synapsecns/synapse-indexer) 
 
 ### Endpoints
-* `/api/v1/analytics/volume/total/tx_count/in`
-* `/api/v1/analytics/volume/total/in`
-* `/api/v1/analytics/new_users`
+* View API docs at [https://syn-analytics-api.metagabbar.xyz](https://syn-analytics-api.metagabbar.xyz)
+* Routes currently supported: [src/routes.ts](https://github.com/synapsecns/analytics-api/blob/master/src/routes.ts)
 
 ### Local Setup
 
